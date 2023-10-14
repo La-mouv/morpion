@@ -109,6 +109,14 @@
             cells[combination[1]].innerText === cells[combination[2]].innerText
         );
     }
+    function makeMove(cell) {
+    if (cell.innerText === '') {
+        cell.innerText = currentSymbol;
+        cell.classList.add(currentSymbol.toLowerCase()); // Ajout de la classe
+        ...
+    }
+}
+
 </script>
 
 </body>
