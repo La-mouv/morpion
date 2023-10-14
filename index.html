@@ -1,106 +1,140 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morpion en JavaScript</title>
+    <title>Jeu de Morpion</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            margin: 0;
         }
 
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            gap: 5px;
-            border: 5px solid #333;
-            padding: 10px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        #container {
+            text-align: center;
+        }
+
+        #score {
+            font-size: 24px;
+            margin-bottom: 20px;
         }
 
         .cell {
             width: 100px;
             height: 100px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
+            font-size: 40px;
+            border: 2px solid #333;
+            display: inline-block;
             cursor: pointer;
-            transition: background-color 0.3s;
+            margin: 5px;
         }
 
         .cell:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .cell.x {
-            color: #d32f2f; /* Rouge pour le joueur X */
-        }
-
-        .cell.o {
-            color: #1976d2; /* Bleu pour le joueur O */
+            background-color: #f0f0f0;
         }
     </style>
 </head>
 <body>
-<div class="board">
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-    <div class="cell" onclick="makeMove(this)"></div>
-</div>
+    <div id="container">
+        <h1>Jeu de Morpion</h1>
+        <div id="score">Joueur 1 (X) : 0 | Joueur 2 (O) : 0</div>
+        <div id="board"></div>
+        <button id="reset">Réinitialiser</button>
+    </div>
+    
+    <script>
+        const board = document.getElementById('board');
+        const score = document.getElementById('score');
+        const resetButton = document.getElementById('reset');
+        let currentPlayer = 'X';
+        let moves = 0;
+        let player1Score = 0;
+        let player2Score = 0;
 
-<script>
-    let currentSymbol = 'X';
+        function createCell(row, col) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = row;
+            cell.dataset.col = col;
+            cell.addEventListener('click', handleClick);
+            return cell;
+        }
 
-    function makeMove(cell) {
-        if (cell.innerText === '') {
-            cell.innerText = currentSymbol;
-            cell.classList.add(currentSymbol.toLowerCase());
-
-            if (checkWin()) {
-                setTimeout(() => {
-                    alert(currentSymbol + ' a gagné!');
-                    location.reload();
-                }, 100);
-            } else if ([...document.querySelectorAll('.cell')].every(c => c.innerText !== '')) {
-                setTimeout(() => {
-                    alert('Match nul!');
-                    location.reload();
-                }, 100);
-            } else {
-                currentSymbol = currentSymbol === 'X' ? 'O' : 'X';
+        function handleClick(event) {
+            const cell = event.target;
+            if (cell.textContent === '' && !isGameOver()) {
+                cell.textContent = currentPlayer;
+                moves++;
+                if (checkWin()) {
+                    announceWinner(currentPlayer);
+                } else if (moves === 9) {
+                    announceDraw();
+                } else {
+                    currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                }
             }
         }
-    }
 
-    function checkWin() {
-        const cells = document.querySelectorAll('.cell');
-        const winningCombinations = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], 
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], 
-            [0, 4, 8], [2, 4, 6]
-        ];
-        return winningCombinations.some(combination => 
-            cells[combination[0]].innerText !== '' &&
-            cells[combination[0]].innerText === cells[combination[1]].innerText &&
-            cells[combination[1]].innerText === cells[combination[2]].innerText
-        );
-    }
-</script>
+        function checkWin() {
+            const cells = Array.from(document.querySelectorAll('.cell'));
+            const winningCombos = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+            return winningCombos.some(combo => {
+                const [a, b, c] = combo;
+                return cells[a].textContent &&
+                    cells[a].textContent === cells[b].textContent &&
+                    cells[a].textContent === cells[c].textContent;
+            });
+        }
+
+        function announceWinner(player) {
+            if (player === 'X') {
+                player1Score++;
+            } else {
+                player2Score++;
+            }
+            updateScore();
+            alert(`Joueur ${player} a gagné !`);
+            resetBoard();
+        }
+
+        function announceDraw() {
+            alert('Match nul !');
+            resetBoard();
+        }
+
+        function resetBoard() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = '';
+            });
+            moves = 0;
+            currentPlayer = 'X';
+        }
+
+        function updateScore() {
+            score.textContent = `Joueur 1 (X) : ${player1Score} | Joueur 2 (O) : ${player2Score}`;
+        }
+
+        resetButton.addEventListener('click', () => {
+            player1Score = 0;
+            player2Score = 0;
+            updateScore();
+            resetBoard();
+        });
+
+        // Create the initial game board
+        for (let row = 0; row < 3; row++) {
+            for (let col = 0; col < 3; col++) {
+                board.appendChild(createCell(row, col));
+            }
+        }
+    </script>
 </body>
 </html>
-
