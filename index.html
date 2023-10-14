@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morpion en JavaScript</title>
+    <title>Morpion Dynamique</title>
     <style>
+        /* ... [Vos styles précédents] ... */
         body {
             font-family: 'Arial', sans-serif;
             display: flex;
@@ -85,97 +84,79 @@
         #resetButton:hover {
             background-color: #45a049;
         }
+        
+        .selection {
+            margin-bottom: 20px;
+        }
     </style>
 </head>
+
 <body>
-<div class="game-container">
-    <div class="scoreboard">
-        <div class="player-score x">
-            X: <span id="scoreX">0</span>
-        </div>
-        <div class="player-score o">
-            O: <span id="scoreO">0</span>
-        </div>
+    <div class="selection">
+        Choisissez le plateau :
+        <button onclick="generateBoard(3)">3x3</button>
+        <button onclick="generateBoard(4)">4x4</button>
     </div>
-    <div class="board">
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-        <div class="cell" onclick="makeMove(this)"></div>
-    </div>
-</div>
 
-<button id="resetButton" onclick="resetGame()">Réinitialiser</button>
+    <div id="boardContainer"></div>
 
-<script>
-    let currentSymbol = 'X';
-    let scoreX = 0;
-    let scoreO = 0;
+    <script>
+        let currentSymbol = 'X';
 
-    function makeMove(cell) {
-        if (cell.innerText === '') {
-            cell.innerText = currentSymbol;
-            cell.classList.add(currentSymbol.toLowerCase());
+        function generateBoard(size) {
+            const boardContainer = document.getElementById('boardContainer');
+            let boardHTML = '<div class="board" style="grid-template-columns: repeat(' + size + ', 100px);">';
+            for (let i = 0; i < size * size; i++) {
+                boardHTML += `<div class="cell" onclick="makeMove(this)"></div>`;
+            }
+            boardHTML += '</div>';
+            boardContainer.innerHTML = boardHTML;
+        }
 
-            if (checkWin()) {
-                setTimeout(() => {
-                    if (currentSymbol === 'X') {
-                        scoreX++;
-                        document.getElementById('scoreX').innerText = scoreX;
-                    } else {
-                        scoreO++;
-                        document.getElementById('scoreO').innerText = scoreO;
-                    }
-                    alert(currentSymbol + ' a gagné!');
-                    resetBoard();
-                }, 100);
-            } else if ([...document.querySelectorAll('.cell')].every(c => c.innerText !== '')) {
-                setTimeout(() => {
-                    alert('Match nul!');
-                    resetBoard();
-                }, 100);
-            } else {
-                currentSymbol = currentSymbol === 'X' ? 'O' : 'X';
+        function makeMove(cell) {
+            if (cell.innerText === '') {
+                cell.innerText = currentSymbol;
+                cell.classList.add(currentSymbol.toLowerCase());
+                if (checkWin()) {
+                    setTimeout(() => {
+                        alert(currentSymbol + ' a gagné!');
+                        location.reload();
+                    }, 100);
+                } else if ([...document.querySelectorAll('.cell')].every(c => c.innerText !== '')) {
+                    setTimeout(() => {
+                        alert('Match nul!');
+                        location.reload();
+                    }, 100);
+                } else {
+                    currentSymbol = currentSymbol === 'X' ? 'O' : 'X';
+                }
             }
         }
-    }
 
-    function resetBoard() {
-        [...document.querySelectorAll('.cell')].forEach(cell => {
-            cell.innerText = '';
-            cell.classList.remove('x', 'o');
-        });
-        currentSymbol = 'X';
-    }
+        function checkWin() {
+            const cells = document.querySelectorAll('.cell');
+            const size = Math.sqrt(cells.length);
+            const winningCombinations = [];
 
-    function checkWin() {
-        const cells = document.querySelectorAll('.cell');
-        const winningCombinations =
-        [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8],
-            [0, 3, 6], [1, 4, 7], [2, 5, 8],
-            [0, 4, 8], [2, 4, 6]
-        ];
-        return winningCombinations.some(combination => 
-            cells[combination[0]].innerText !== '' &&
-            cells[combination[0]].innerText === cells[combination[1]].innerText &&
-            cells[combination[1]].innerText === cells[combination[2]].innerText
-        );
-    }
+            // Lignes
+            for (let i = 0; i < size; i++) {
+                winningCombinations.push([...Array(size).keys()].map(x => x + i * size));
+            }
 
-function resetGame() {
-        scoreX = 0;
-        scoreO = 0;
-        document.getElementById('scoreX').innerText = scoreX;
-        document.getElementById('scoreO').innerText = scoreO;
-        resetBoard();
-    }
-    
-</script>
+            // Colonnes
+            for (let i = 0; i < size; i++) {
+                winningCombinations.push([...Array(size).keys()].map(x => x * size + i));
+            }
+
+            // Diagonales
+            winningCombinations.push([...Array(size).keys()].map(x => x * size + x));
+            winningCombinations.push([...Array(size).keys()].map(x => (x + 1) * size - (x + 1)));
+
+            return winningCombinations.some(combination =>
+                combination.every(index => cells[index].innerText === currentSymbol)
+            );
+        }
+    </script>
 </body>
+
 </html>
