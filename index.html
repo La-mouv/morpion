@@ -44,11 +44,13 @@
             background-color: #ddd;
         }
 
-        .cell.X {
+        .cell.X::after {
+            content: "X";
             color: red;
         }
 
-        .cell.O {
+        .cell.O::after {
+            content: "O";
             color: blue;
         }
     </style>
@@ -81,8 +83,7 @@
 
         function handleClick(event) {
             const cell = event.target;
-            if (cell.textContent === '' && !isGameOver()) {
-                cell.textContent = currentPlayer;
+            if (!cell.classList.contains('X') && !cell.classList.contains('O') && !isGameOver()) {
                 cell.classList.add(currentPlayer);
                 moves++;
                 if (checkWin()) {
@@ -104,9 +105,9 @@
             ];
             return winningCombos.some(combo => {
                 const [a, b, c] = combo;
-                return cells[a].textContent &&
-                    cells[a].textContent === cells[b].textContent &&
-                    cells[a].textContent === cells[c].textContent;
+                return cells[a].classList.contains(currentPlayer) &&
+                    cells[b].classList.contains(currentPlayer) &&
+                    cells[c].classList.contains(currentPlayer);
             });
         }
 
@@ -129,7 +130,6 @@
         function resetBoard() {
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
-                cell.textContent = '';
                 cell.classList.remove('X', 'O');
             });
             moves = 0;
