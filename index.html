@@ -48,37 +48,9 @@
         .cell.o {
             color: #1976d2; /* Bleu pour le joueur O */
         }
-
-        button {
-    padding: 15px 30px;
-    font-size: 18px;
-    border: none;
-    background-color: #1976d2; /* couleur bleue */
-    color: #fff;
-    cursor: pointer;
-    border-radius: 5px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #1565c0; /* couleur bleue foncée au survol */
-}
-
     </style>
 </head>
 <body>
-
-<!-- Ecran de démarrage -->
-<div id="startScreen" style="position: absolute; width: 100%; height: 100vh; background-color: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; z-index: 10;">
-    <button onclick="startGame()">Start Game</button>
-</div>
-
-<!-- Votre plateau de jeu (le même que précédemment) -->
-<div class="board">
-    ...
-</div>
-
 <div class="board">
     <div class="cell" onclick="makeMove(this)"></div>
     <div class="cell" onclick="makeMove(this)"></div>
@@ -94,14 +66,10 @@ button:hover {
 <script>
     let currentSymbol = 'X';
 
-function startGame() {
-    document.getElementById('startScreen').style.display = 'none'; // cache l'écran de démarrage
-}
-
     function makeMove(cell) {
         if (cell.innerText === '') {
             cell.innerText = currentSymbol;
-            cell.classList.add(currentSymbol.toLowerCase()); // Ajoute la classe 'x' ou 'o'
+            cell.classList.add(currentSymbol.toLowerCase());
 
             if (checkWin()) {
                 setTimeout(() => {
@@ -133,6 +101,6 @@ function startGame() {
         );
     }
 </script>
-
 </body>
 </html>
+
