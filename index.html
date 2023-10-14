@@ -97,6 +97,8 @@
     </div>
 </div>
 
+<button id="resetButton" onclick="resetGame()">Réinitialiser</button>
+
 <script>
     let currentSymbol = 'X';
     let scoreX = 0;
@@ -152,6 +154,15 @@
             cells[combination[1]].innerText === cells[combination[2]].innerText
         );
     }
+
+function resetGame() {
+        scoreX = 0;
+        scoreO = 0;
+        document.getElementById('scoreX').innerText = scoreX;
+        document.getElementById('scoreO').innerText = scoreO;
+        resetBoard();
+    }
+    
 </script>
 </body>
 </html>
