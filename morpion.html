@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morpion en JavaScript</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: 100px 100px 100px;
+            gap: 5px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 24px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="board">
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+    <div class="cell" onclick="makeMove(this)"></div>
+</div>
+
+<script>
+    let currentSymbol = 'X';
+
+    function makeMove(cell) {
+        if (cell.innerText === '') {
+            cell.innerText = currentSymbol;
+            if (checkWin()) {
+                alert(currentSymbol + ' a gagné!');
+                location.reload(); // Reset le jeu
+            } else if ([...document.querySelectorAll('.cell')].every(c => c.innerText !== '')) {
+                alert('Match nul!');
+                location.reload();
+            } else {
+                currentSymbol = currentSymbol === 'X' ? 'O' : 'X';
+            }
+        }
+    }
+
+    function checkWin() {
+        const cells = document.querySelectorAll('.cell');
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+            [0, 4, 8], [2, 4, 6]
+        ];
+        return winningCombinations.some(combination => 
+            cells[combination[0]].innerText !== '' &&
+            cells[combination[0]].innerText === cells[combination[1]].innerText &&
+            cells[combination[1]].innerText === cells[combination[2]].innerText
+        );
+    }
+</script>
+
+</body>
+</html>
+
