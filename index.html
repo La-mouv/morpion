@@ -43,6 +43,14 @@
         .cell:hover {
             background-color: #ddd;
         }
+
+        .cell.X {
+            color: red;
+        }
+
+        .cell.O {
+            color: blue;
+        }
     </style>
 </head>
 <body>
@@ -75,6 +83,7 @@
             const cell = event.target;
             if (cell.textContent === '' && !isGameOver()) {
                 cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer);
                 moves++;
                 if (checkWin()) {
                     announceWinner(currentPlayer);
@@ -121,6 +130,7 @@
             const cells = document.querySelectorAll('.cell');
             cells.forEach(cell => {
                 cell.textContent = '';
+                cell.classList.remove('X', 'O');
             });
             moves = 0;
             currentPlayer = 'X';
